@@ -13,9 +13,10 @@ export const register = async (req, res) => {
         var cipherPin = encrypt.encrypt(plainPin, secretkey, 256);
         const user = new Users({ name, email, password: cipherText, pin: cipherPin, role })
         await user.save();
-        return res.send("Resgistration Succesfull.")
+        return res.send("Resgistration Succesfull.   this is bold.     this is bold too,")
 
     } catch (error) {
         return res.send(error)
     }
 }
+
