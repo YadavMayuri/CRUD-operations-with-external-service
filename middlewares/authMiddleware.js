@@ -30,8 +30,8 @@ export const registrationCheck= async (req, res, next) => {
 }
 
 
-
-export const SellerMiddleware = async (req, res, next) => {
+// add product middleware
+export const AddProductMiddleware = async (req, res, next) => {
     try {
         const { id, pin} = req.body;
         if (!id) return res.send("id is required - middleware");
@@ -47,10 +47,119 @@ export const SellerMiddleware = async (req, res, next) => {
 
         if (decipherPin === pin) {  
 
+            if(response[0].role == "seller"){
+                next();
+            }else{
+                return res.send("Only seller is allowed to add products.")
+            }
+            
+
+        } else {
+            return res.send("Incorrect pin - middleware");
+        }
+
+
+    } catch (error) {
+        res.send(error)
+    }
+}
+
+
+
+// Update Product Middleware
+
+export const UpdateProductMiddleware = async (req, res, next) => {
+    try {
+        const { userId, pin} = req.body;
+        if (!userId) return res.send("id is required - middleware");
+        if (!pin) return res.send("Pin is required - middleware");
+
+        var secretkey = 'ios';
+
+        const response = await Users.find({ _id : userId }).exec();
+        console.log(response, "response here");
+
+        var decipherPin = encrypt.decrypt(response[0].pin, secretkey, 256);
+        console.log("Deciphered Pin is : " + decipherPin);
+
+        if (decipherPin === pin) {  
+
             if(response[0].role == "seller" || response[0].role == "admin"){
                 next();
             }else{
-                return res.send("You are not allowed to add products.")
+                return res.send("Buyer is not allowed  to update products.")
+            }
+            
+
+        } else {
+            return res.send("Incorrect pin - middleware");
+        }
+
+
+    } catch (error) {
+        res.send(error)
+    }
+}
+
+
+
+// get product middleware
+export const GetProductsMiddleware = async (req, res, next) => {
+    try {
+        const { userId, pin} = req.body;
+        if (!userId) return res.send("userId is required - middleware");
+        if (!pin) return res.send("Pin is required - middleware");
+
+        var secretkey = 'ios';
+
+        const response = await Users.find({ _id : userId }).exec();
+        console.log(response, "response here");
+
+        var decipherPin = encrypt.decrypt(response[0].pin, secretkey, 256);
+        console.log("Deciphered Pin is : " + decipherPin);
+
+        if (decipherPin === pin) {  
+
+            if(response[0].role == "buyer"){
+                next();
+            }else{
+                return res.send("Only buyer is allowed to get products.")
+            }
+            
+
+        } else {
+            return res.send("Incorrect pin - middleware");
+        }
+
+
+    } catch (error) {
+        res.send(error)
+    }
+}
+
+
+
+//delete product middleware
+export const deleteProductMiddleware = async (req, res, next) => {
+    try {
+        const { userId, pin} = req.body;
+        if (!userId) return res.send("userId is required - middleware");
+        if (!pin) return res.send("Pin is required - middleware");
+
+        var secretkey = 'ios';
+
+        const response = await Users.find({ _id : userId }).exec();
+        console.log(response, "response here");
+
+        var decipherPin = encrypt.decrypt(response[0].pin, secretkey, 256);
+        console.log("Deciphered Pin is : " + decipherPin);
+
+        if (decipherPin === pin) {  
+
+            if(response[0].role == "admin"){
+                next();
+            }else{
+                return res.send("Only admin is allowed  to delete products.")
             }
             
 
